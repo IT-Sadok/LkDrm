@@ -40,7 +40,7 @@ ConsoleLibrary/
 │
 ├── Interfaces/
 │   ├── IBookManager.cs            # Interface for BookManager
-│   └── IJSONManager.cs            # Interface for JSONManager
+│   └── IBookRepository.cs         # Interface for JSONManager
 │
 ├── JsonHandling/
 │   └── JSONManager.cs             # Load/save library data to JSON
@@ -59,7 +59,8 @@ Represents a single book in the library.
 
 | Property   | Type         | Description                          |
 |------------|--------------|--------------------------------------|
-| `UniqId`   | `Guid`       | Unique identifier for the book       |
+| `Id`       | `Guid`       | Unique identifier for the book       |
+| `ShelfId`  | `int`        | Shelf position in the library        |
 | `Title`    | `string`     | Title of the book                    |
 | `Author`   | `string`     | Author of the book                   |
 | `Published`| `int`        | Year the book was published          |
@@ -105,20 +106,21 @@ The library is stored in a `library.json` file in the application's working dire
 
 - **Format:** JSON (human-readable, indented)
 - **Enum serialization:** Stored as strings (e.g., `"Available"`, `"Borrowed"`)
-- **Auto-save:** After every mutating operation in the main menu loop
+- **Auto-save:** After every mutating operation inside `BookManager` (add, remove, borrow, return)
 
 Example `library.json`:
 
 ```json
-{
-  "0": {
-	"uniqId": "a1b2c3d4-...",
+[
+  {
+	"id": "a1b2c3d4-...",
+	"shelfId": 0,
 	"title": "Clean Code",
 	"author": "Robert C. Martin",
 	"published": 2008,
 	"status": "Available"
   }
-}
+]
 ```
 
 ---
@@ -131,7 +133,7 @@ Example `library.json`:
 | **C# 13**               | Primary programming language                    |
 | `System.Text.Json`      | JSON serialization and deserialization          |
 | `JsonStringEnumConverter` | Serialize enums as readable strings in JSON   |
-| `Dictionary<int, BookInfo>` | In-memory storage structure for the library |
+| `List<BookInfo>`            | In-memory storage structure for the library |
 | `Guid`                  | Unique book identification                      |
 | `Console` (System)      | User interface via colored console output       |
 

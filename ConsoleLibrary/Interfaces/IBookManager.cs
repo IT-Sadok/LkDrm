@@ -8,11 +8,6 @@ namespace ConsoleLibrary.Interfaces;
 public interface IBookManager
 {
     /// <summary>
-    /// Gets or sets the current shelf ID counter.
-    /// </summary>
-    int Id { get; set; }
-
-    /// <summary>
     /// Adds a new book to the library.
     /// </summary>
     /// <param name="bookInfo">The book information to add.</param>

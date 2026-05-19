@@ -9,22 +9,14 @@ namespace ConsoleLibrary.BookHandling;
 /// </summary>
 public class BookManager : IBookManager
 {
-    private Dictionary<int, BookInfo> _library = [];
+    private readonly List<BookInfo> _library = new();
+    private readonly IBookRepository _repository;
 
-    /// <summary>
-    /// Gets or sets the dictionary representing the library's book collection,
-    /// where the key is the shelf ID and the value is the book information.
-    /// </summary>
-    public Dictionary<int, BookInfo> Library
+    public BookManager(IBookRepository repository)
     {
-        get { return _library; }
-        set { _library = value; }
+        _repository = repository;
+        _library = _repository.Load();
     }
-
-    /// <summary>
-    /// Gets or sets the current shelf ID counter used when adding new books.
-    /// </summary>
-    public int Id { get; set; }
 
     /// <summary>
     /// Adds a new book to the library, assigning it the next available shelf ID.
@@ -32,16 +24,24 @@ public class BookManager : IBookManager
     /// <param name="bookInfo">The book information to add.</param>
     public void AddBook(BookInfo bookInfo)
     {
-        // Assign an ID based on the current number of books
-        Id = Library.Keys.Count > 0 ? Library.Keys.Count + 1 : 0;
-        Library.TryAdd(Id, bookInfo);
+        bookInfo.ShelfId = _library.Count > 0 ? _library.Max(b => b.ShelfId) + 1 : 0;
+        _library.Add(bookInfo);
+        _repository.Save(_library);
     }
 
     /// <summary>
     /// Removes a book from the library by its shelf ID.
     /// </summary>
     /// <param name="id">The shelf ID of the book to remove.</param>
-    public void RemoveBook(int id) => Library.Remove(id);
+    public void RemoveBook(int id)
+    {
+        var book = _library.FirstOrDefault(b => b.ShelfId == id);
+        if (book is not null)
+        {
+            _library.Remove(book);
+            _repository.Save(_library);
+        }
+    }
 
     /// <summary>
     /// Searches for books matching the given author name or title and displays their details.
@@ -52,14 +52,15 @@ public class BookManager : IBookManager
         if (string.IsNullOrEmpty(authorOrTitle))
         {
             ConsoleHelper.PrintError("Enter please author or title....");
+            return;
         }
 
-        var bookInfo = Library.Values.Where(book => book.Author == authorOrTitle || book.Title == authorOrTitle);
-        if (bookInfo != null)
+        var bookInfo = _library.Where(book => book.Author == authorOrTitle || book.Title == authorOrTitle);
+        if (bookInfo.Any())
         {
             foreach (var books in bookInfo)
             {
-                ConsoleHelper.PrintInfo($"\nAuthor: {books.Author} \nTitle: {books.Title} \nStatus: {books.Status} \nPublished: {books.Published} \nUniqBookId: {books.UniqId}");
+                ConsoleHelper.PrintInfo($"\nAuthor: {books.Author} \nTitle: {books.Title} \nStatus: {books.Status} \nPublished: {books.Published} \nUniqBookId: {books.Id}");
             }
         }
         else
@@ -73,17 +74,18 @@ public class BookManager : IBookManager
     /// </summary>
     public void ShowAllBooks()
     {
-        if (Library.Count > 0)
+        if (_library.Count > 0)
         {
-            foreach (var book in Library)
+            foreach (var book in _library)
             {
-                ConsoleHelper.PrintInfo($"\nBookShell: {book.Key} \nAuthor: {book.Value.Author} \nTitle: {book.Value.Title} \nStatus: {book.Value.Status} \nPublished: {book.Value.Published} \nUniqBookId: {book.Value.UniqId}");
+                ConsoleHelper.PrintInfo($"\nBookShell: {book.ShelfId} \nAuthor: {book.Author} \nTitle: {book.Title} \nStatus: {book.Status} \nPublished: {book.Published} \nUniqBookId: {book.Id}");
             }
         }
         else
         {
             ConsoleHelper.PrintError("The library is empty");
         }
+
     }
 
     /// <summary>
@@ -92,13 +94,14 @@ public class BookManager : IBookManager
     /// <param name="id">The shelf ID of the book to borrow.</param>
     public void BorrowBook(int id)
     {
-        if (Library.TryGetValue(id, out BookInfo? bookInfo))
+        var bookInfo = _library.FirstOrDefault(b => b.ShelfId == id);
+        if (bookInfo is not null)
         {
             if (bookInfo.Status == BookStatus.Available)
             {
-                // Mark the book as borrowed
                 bookInfo.Status = BookStatus.Borrowed;
                 ConsoleHelper.PrintSuccess($"Book has been borrowed {bookInfo.Author} {bookInfo.Title}");
+                _repository.Save(_library);
             }
             else
             {
@@ -117,10 +120,12 @@ public class BookManager : IBookManager
     /// <param name="id">The shelf ID of the book to return.</param>
     public void ReturnBook(int id)
     {
-        if (Library.TryGetValue(id, out BookInfo? bookInfo))
+        var bookInfo = _library.FirstOrDefault(b => b.ShelfId == id);
+        if (bookInfo is not null)
         {
             bookInfo.Status = BookStatus.Available;
             ConsoleHelper.PrintSuccess($"Book has been return into the book-shell: {bookInfo.Author} {bookInfo.Title}");
+            _repository.Save(_library);
         }
     }
 }

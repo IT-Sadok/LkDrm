@@ -4,12 +4,8 @@ using ConsoleLibrary.UI;
 
 Console.Title = "Library";
 
-var jsonManager = new JSONManager();
-
-var bookManager = new BookManager
-{
-    Library = jsonManager.Load()
-};
+var bookRepository = new JSONManager();
+var bookManager = new BookManager(bookRepository);
 
 while (true)
 {
@@ -43,7 +39,7 @@ while (true)
                 Author = author,
                 Published = published,
                 Status = BookStatus.Available,
-                UniqId = Guid.NewGuid(),
+                Id = Guid.NewGuid(),
             };
 
             bookManager.AddBook(bookInfo);
@@ -99,6 +95,4 @@ while (true)
 
             break;
     }
-
-    jsonManager.Save(bookManager.Library);
 }

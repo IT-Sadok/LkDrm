@@ -8,7 +8,12 @@ public class BookInfo
     /// <summary>
     /// Gets or sets the unique identifier of the book.
     /// </summary>
-    public Guid UniqId { get; set; }
+    public Guid Id { get; set; }
+
+    /// <summary>
+    /// Gets or sets the shelf position of the book in the library.
+    /// </summary>
+    public int ShelfId { get; set; }
 
     /// <summary>
     /// Gets or sets the title of the book.
