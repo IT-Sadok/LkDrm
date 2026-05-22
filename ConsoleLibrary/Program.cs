@@ -53,7 +53,19 @@ while (true)
             ConsoleHelper.PrintHeader("\n--- Book information ---");
 
             string authorOrTitle = ConsoleHelper.ReadInput("Enter a book author or title: ");
-            bookManager.ShowBookInfo(authorOrTitle);
+
+            var books = bookManager.ShowBookInfo(authorOrTitle);
+            if (books.Count == 0)
+            {
+                ConsoleHelper.PrintError($"No books found for '{authorOrTitle}'");
+            }
+            else
+            {
+                foreach (var book in books)
+                {
+                    ConsoleHelper.PrintInfo($"\nBookShell: {book.ShelfId} \nAuthor: {book.Author} \nTitle: {book.Title} \nStatus: {book.Status} \nPublished: {book.Published} \nUniqBookId: {book.Id}");
+                }
+            }
 
             ConsoleHelper.PrintInfo("Press 'Enter' to continue...");
             Console.ReadLine();
@@ -62,7 +74,19 @@ while (true)
         case "3":
             ConsoleHelper.PrintHeader("\n--- All books ---");
 
-            bookManager.ShowAllBooks();
+            var library = bookManager.ShowAllBooks();
+
+            if (library.Count > 0)
+            {
+                foreach (var book in library)
+                {
+                    ConsoleHelper.PrintInfo($"\nBookShell: {book.ShelfId} \nAuthor: {book.Author} \nTitle: {book.Title} \nStatus: {book.Status} \nPublished: {book.Published} \nUniqBookId: {book.Id}");
+                }
+            }
+            else
+            {
+                ConsoleHelper.PrintError("The library is empty");
+            }
 
             ConsoleHelper.PrintInfo("Press 'Enter' to continue...");
             Console.ReadLine();

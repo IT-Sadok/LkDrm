@@ -47,46 +47,14 @@ public class BookManager : IBookManager
     /// Searches for books matching the given author name or title and displays their details.
     /// </summary>
     /// <param name="authorOrTitle">The author name or title to search for.</param>
-    public void ShowBookInfo(string authorOrTitle)
-    {
-        if (string.IsNullOrEmpty(authorOrTitle))
-        {
-            ConsoleHelper.PrintError("Enter please author or title....");
-            return;
-        }
-
-        var bookInfo = _library.Where(book => book.Author == authorOrTitle || book.Title == authorOrTitle);
-        if (bookInfo.Any())
-        {
-            foreach (var books in bookInfo)
-            {
-                ConsoleHelper.PrintInfo($"\nAuthor: {books.Author} \nTitle: {books.Title} \nStatus: {books.Status} \nPublished: {books.Published} \nUniqBookId: {books.Id}");
-            }
-        }
-        else
-        {
-            ConsoleHelper.PrintError($"There is no books or authors with title or author {authorOrTitle}");
-        }
-    }
+    public List<BookInfo> ShowBookInfo(string authorOrTitle) => _library
+            .Where(book => book.Author == authorOrTitle || book.Title == authorOrTitle)
+            .ToList();
 
     /// <summary>
     /// Displays information about all books currently in the library.
     /// </summary>
-    public void ShowAllBooks()
-    {
-        if (_library.Count > 0)
-        {
-            foreach (var book in _library)
-            {
-                ConsoleHelper.PrintInfo($"\nBookShell: {book.ShelfId} \nAuthor: {book.Author} \nTitle: {book.Title} \nStatus: {book.Status} \nPublished: {book.Published} \nUniqBookId: {book.Id}");
-            }
-        }
-        else
-        {
-            ConsoleHelper.PrintError("The library is empty");
-        }
-
-    }
+    public List<BookInfo> ShowAllBooks() => _library;
 
     /// <summary>
     /// Marks a book as borrowed if it is currently available.

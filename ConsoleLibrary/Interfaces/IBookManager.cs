@@ -23,12 +23,12 @@ public interface IBookManager
     /// Searches for and displays books matching the given author name or title.
     /// </summary>
     /// <param name="authorOrTitle">The author name or title to search for.</param>
-    void ShowBookInfo(string authorOrTitle);
+    List<BookInfo> ShowBookInfo(string authorOrTitle);
 
     /// <summary>
     /// Displays all books currently in the library.
     /// </summary>
-    void ShowAllBooks();
+    List<BookInfo> ShowAllBooks();
 
     /// <summary>
     /// Marks a book as borrowed by its shelf ID.
