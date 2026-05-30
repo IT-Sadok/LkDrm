@@ -82,37 +82,15 @@ public class BookManager : IBookManager
     /// </summary>
     /// <param name="authorOrTitle">The author name or title to search for.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of books matching the search criteria.</returns>
-    public async Task<List<BookInfo>> ShowBookInfoAsync(string authorOrTitle)
-    {
-        await _semaphore.WaitAsync();
-        try
-        {
-            return _library
+    public async Task<List<BookInfo>> ShowBookInfoAsync(string authorOrTitle) => _library
             .Where(book => book.Author == authorOrTitle || book.Title == authorOrTitle)
             .ToList();
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
-    }
 
     /// <summary>
     /// Displays information about all books currently in the library.
     /// </summary>
     /// <returns>A task that represents the asynchronous operation. The task result contains a list of all books in the library.</returns>
-    public async Task<List<BookInfo>> ShowAllBooksAsync()
-    {
-        await _semaphore.WaitAsync();
-        try
-        {
-            return _library.ToList();
-        }
-        finally
-        {
-            _semaphore.Release();
-        }
-    }
+    public async Task<List<BookInfo>> ShowAllBooksAsync() => _library.ToList();
 
     /// <summary>
     /// Marks a book as borrowed if it is currently available.
