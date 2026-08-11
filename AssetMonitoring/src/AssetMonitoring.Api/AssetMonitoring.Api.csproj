@@ -10,4 +10,12 @@
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Configuration\DeviceCatalog\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AssetMonitoring.Modules.DeviceManagement\AssetMonitoring.Modules.DeviceManagement.csproj" />
+  </ItemGroup>
+
 </Project>
